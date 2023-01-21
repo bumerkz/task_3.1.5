@@ -29,11 +29,13 @@ public class RoleDaoImpl implements RoleDao {
 
     @Override
     public Role findByName(String name) {
-        return entityManager.createQuery("select r from Role r where r.role= :id", Role.class).setParameter("id", name).getResultList().stream().findAny().orElse(null);
+        return entityManager.createQuery("select r from Role r where r.role= :id", Role.class)
+                .setParameter("id", name).getResultList().stream().findAny().orElse(null);
     }
 
     @Override
     public List<Role> listByName(List<String> name) {
-        return entityManager.createQuery("select r from Role r where r.role in (:id)", Role.class).setParameter("id", name).getResultList();
+        return entityManager.createQuery("select r from Role r where r.role in (:id)", Role.class)
+                .setParameter("id", name).getResultList();
     }
 }

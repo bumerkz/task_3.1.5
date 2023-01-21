@@ -27,7 +27,7 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String username, int age, String email, String password, List<Role> roles) {
+    public User(String username, int age, String email, String password, Set<Role> roles) {
         this.username = username;
         this.age = age;
         this.email = email;
@@ -39,7 +39,7 @@ public class User implements UserDetails {
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),                //ManyToMany потому что у пользователя может быть много ролей и одна роль может бфть присвоена нескольким юзерам
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private List<Role> roles;
+    private Set<Role> roles;
 
     public Long getId() {
         return id;
@@ -106,11 +106,11 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public List<Role> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<Role> roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 

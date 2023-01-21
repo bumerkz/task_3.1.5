@@ -10,7 +10,9 @@ import ru.kata.spring.boot_security.demo.entity.Role;
 import ru.kata.spring.boot_security.demo.entity.User;
 import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
@@ -21,21 +23,26 @@ public class AdminController {
     public AdminController(UserServiceImpl userService) {
         this.userService = userService;
     }
+
     @GetMapping
-    public String sawUsers (Model model) {
+    public String sawUsers (Model model, Principal principal) {
+        User user = userService.findByEmail(principal.getName());
+        model.addAttribute("messages", user);
+        model.addAttribute("user", new User());
         model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("roleUser", userService.getAllRoles());
         return "admin";
     }
     @GetMapping(value = "new_user")
     public String makeUser(User user, Model model) {
-        model.addAttribute("roleList", userService.getAllRoles());
-        return "new_user";
+        model.addAttribute("roleUser", userService.getAllRoles());
+        return "newUser";
     }
     @PostMapping("new_user")
     public String addUser(User user) {
         List<String> list1 = user.getRoles().stream().map(role -> role.getRole()).collect(Collectors.toList());
         List<Role> list2 = userService.listByRole(list1);
-        user.setRoles(list2);
+        user.setRoles(Set.copyOf(list2));
         userService.add(user);
         return "redirect:/admin";
     }
@@ -43,17 +50,19 @@ public class AdminController {
     public String changeUser(@PathVariable("id") Long id, Model model) {
         User user = userService.getUser(id);
         model.addAttribute("user", user);
-        model.addAttribute("roleList", userService.getAllRoles());
+        model.addAttribute("roleUser", userService.getAllRoles());
         return "change";
     }
-    @PostMapping(value = "change")
-    public String updateUser (User user) {
+    @PostMapping(value = "/change")
+    public String updateUser(User user) {
         List<String> list1 = user.getRoles().stream().map(r -> r.getRole()).collect(Collectors.toList());
         List<Role> list2 = userService.listByRole(list1);
-        user.setRoles(list2);
+        user.setRoles(Set.copyOf(list2));// здесь была строка  user.setRoles(Set.copyOf(list2))
+        userService.edit(user);
         userService.edit(user);
         return "redirect:/admin";
     }
+
     @GetMapping(value = "delete/{id}")
     public String delete(@PathVariable ("id") Long id) {
         userService.delete(id);

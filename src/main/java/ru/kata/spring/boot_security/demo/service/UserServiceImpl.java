@@ -33,7 +33,6 @@ public class UserServiceImpl implements UserService {
         return new BCryptPasswordEncoder(10);
     }
 
-    @Autowired
     public UserServiceImpl(RoleDaoImpl roleDao, UserDaoImpl userDao) {
         this.roleDao = roleDao;
         this.userDao = userDao;
@@ -41,13 +40,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean addRole(Role role) {
+    public void addRole(Role role) {
         Role userOne = roleDao.findByName(role.getRole());
-        if (userOne != null) {
-            return false;
-        }
-        roleDao.add(role);
-        return true;
+            roleDao.add(role);
     }
 
     @Override
@@ -77,7 +72,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void add(User user) {                                        // изменения метода для правильного сохранения в БД, иначе пароль не кодировался
-        User userOne = userDao.findByName(user.getUsername());
         user.setPassword(passwordEncoder().encode(user.getPassword()));
         userDao.add(user);
 
@@ -109,15 +103,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public User findByUsername(String username) {
-        return userDao.findByName(username);
+    public User findByEmail(String email) {
+        return userDao.findByEmail(email);
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User userOne = findByUsername(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User userOne = findByEmail(email);
         if (userOne == null) {
-            throw new UsernameNotFoundException(username + " не найден");
+            throw new UsernameNotFoundException(email + " не найден");
         }
         UserDetails user = new org.springframework.security.core.userdetails.User(userOne.getUsername(),
                 userOne.getPassword(), authority(userOne.getRoles()));

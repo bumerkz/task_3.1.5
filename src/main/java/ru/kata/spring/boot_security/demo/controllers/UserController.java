@@ -17,7 +17,7 @@ public class UserController {
     }
     @GetMapping(value = "/user")
     public String userPage (ModelMap modelMap, Principal principal) {
-        User user1 = userDao.findByName(principal.getName());
+        User user1 = userDao.findByEmail(principal.getName());
         modelMap.addAttribute("messages", user1);
         return "user";
     }
