@@ -1,15 +1,11 @@
 package ru.kata.spring.boot_security.demo.service;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import ru.kata.spring.boot_security.demo.dao.RoleDao;
-import ru.kata.spring.boot_security.demo.dao.RoleDaoImpl;
-import ru.kata.spring.boot_security.demo.dao.UserDao;
 import ru.kata.spring.boot_security.demo.dao.UserDaoImpl;
-
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,53 +16,22 @@ import ru.kata.spring.boot_security.demo.entity.User;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
+
 import java.util.stream.Collectors;
 
 
 @Service
 public class UserServiceImpl implements UserService {
-    private final RoleDaoImpl roleDao;
+
     private final UserDaoImpl userDao;
 
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
     }
 
-    public UserServiceImpl(RoleDaoImpl roleDao, UserDaoImpl userDao) {
-        this.roleDao = roleDao;
+
+    public UserServiceImpl(UserDaoImpl userDao) {
         this.userDao = userDao;
-    }
-
-    @Override
-    @Transactional
-    public void addRole(Role role) {
-        Role userOne = roleDao.findByName(role.getRole());
-            roleDao.add(role);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Role findByNameRole(String name) {
-        return roleDao.findByName(name);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Role> getAllRoles() {
-        return roleDao.getAllRoles();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Role findByIdRole(Long id) {
-        return roleDao.findByIdRole(id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Role> listByRole(List<String> name) {
-        return roleDao.listByName(name);
     }
 
     @Override
@@ -92,6 +57,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void edit(User user) {
+        user.setPassword(passwordEncoder().encode(user.getPassword()));
         userDao.edit(user);
     }
 
@@ -114,7 +80,7 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException(email + " не найден");
         }
         UserDetails user = new org.springframework.security.core.userdetails.User(userOne.getUsername(),
-                userOne.getPassword(), authority(userOne.getRoles()));
+                userOne.getPassword(), authority(userOne.getRoles())); // не нужные действия
         return userOne;
     }
 

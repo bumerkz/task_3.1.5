@@ -69,8 +69,8 @@
                     </thead>
                     <tbody>
                     <td th:text="${messages.getId()}"></td>
-                    <td th:text="${messages.username()}"></td>
-                    <td th:text="${messages.getAge()()}"></td>
+                    <td th:text="${messages.getUsername()}"></td>
+                    <td th:text="${messages.getAge()}"></td>
                     <td th:text="${messages.getEmail()}"></td>
                     <td>
                         <th:block th:each="msg:${messages.getRoles()}" th:text="${msg.withoutPrefix()}+'   '"></th:block>
