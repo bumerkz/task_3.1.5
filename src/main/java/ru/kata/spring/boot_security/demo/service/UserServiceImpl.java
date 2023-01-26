@@ -24,10 +24,12 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserDaoImpl userDao;
+    @Autowired
+    private PasswordEncoder encoder;
 
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
-    }
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder(10);
+//    }
 
 
     public UserServiceImpl(UserDaoImpl userDao) {
@@ -37,7 +39,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void add(User user) {                                        // изменения метода для правильного сохранения в БД, иначе пароль не кодировался
-        user.setPassword(passwordEncoder().encode(user.getPassword()));
+        user.setPassword(encoder.encode(user.getPassword()));
         userDao.add(user);
 
     }
@@ -57,7 +59,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void edit(User user) {
-        user.setPassword(passwordEncoder().encode(user.getPassword()));
+        if(!user.getPassword().equals(userDao.getUser(user.getId()).getPassword())) {
+            user.setPassword(encoder.encode(user.getPassword()));
+        }
         userDao.edit(user);
     }
 
