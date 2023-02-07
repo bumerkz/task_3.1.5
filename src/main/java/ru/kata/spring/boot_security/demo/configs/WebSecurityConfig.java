@@ -30,10 +30,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
-                .antMatchers("/user").access("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-                .anyRequest().authenticated()
+                .antMatchers("/admin/**").permitAll()
+                .anyRequest().permitAll() // изменил на permit и все заработало
                 .and()
                 .formLogin().loginPage("/login")
                 .successHandler(successUserHandler)
@@ -41,6 +41,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .logout().logoutUrl("/logout").logoutSuccessUrl("/login")
                 .permitAll();
+
     }
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -51,17 +52,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure (AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.userDetailsService(userService).passwordEncoder(passwordEncoder());
     }
-    // аутентификация inMemory
-//    @Bean
-//    @Override
-//    public UserDetailsService userDetailsService() {
-//        UserDetails user =
-//                User.withDefaultPasswordEncoder()
-//                        .username("user")
-//                        .password("user")
-//                        .roles("USER")
-//                        .build();
-//
-//        return new InMemoryUserDetailsManager(user);
-//    }
 }
