@@ -24,8 +24,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional(readOnly = true)
-    public Role findByNameRole(String name) {
-        return roleDao.findByName(name);
+    public Role findByNameRole(String email) {
+        return roleDao.findByName(email);
     }
     @Override
     @Transactional(readOnly = true)
@@ -38,9 +38,10 @@ public class RoleServiceImpl implements RoleService {
     public Role findByIdRole(Long id) {
         return roleDao.findByIdRole(id);
     }
+
     @Override
     @Transactional(readOnly = true)
-    public List<Role> listByRole(List<String> name) {
-        return roleDao.listByName(name);
+    public List<Role> listByRole(List<String> email) {
+        return roleDao.listByName(email);
     }
 }
